@@ -5,5 +5,4 @@
 
 
 (deftest depth_first_serach-test
-  (is (= ' (findpath  stack) ))
-  )
+  (is (= '[:s :d :e :f :g] (findpath  stack) )))
