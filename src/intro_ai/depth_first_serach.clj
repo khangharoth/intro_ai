@@ -40,5 +40,3 @@
                                       (map #(addtopath first* %)
                                            (keys (l graph))) stack)))))
     [(first stack)]))
-
-(println (findpath stack))
