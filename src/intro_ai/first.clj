@@ -2,25 +2,26 @@
   (:import (clojure.lang PersistentQueue)))
 
 
-(def tree [1 [2 [4] [5 [7] [8]]] [3  [6]]])
+(def graph
+  {:s {:a 3 :d 4}
+   :a {:s 3 :d 5 :b 4}
+   :b {:a 4 :e 5 :c 4}
+   :c {:b 4}
+   :d {:s 4 :a 5 :e 2}
+   :e {:d 2 :b 5 :f 4}
+   :f {:e 4 :g 1}})
 
+(def stack [[:s]])
 
-(defn bfs-eager [tree]
-  (loop [ret [], queue (conj PersistentQueue/EMPTY tree)]
-    (if (seq queue)
-      (let [[node & children] (peek queue)]
-        (recur (conj ret node) (into (pop queue) children)))
-      ret)))
+(def goal :g)
 
-(defn bfs-lazy [tree]
-  ((fn step [queue]
-     (lazy-seq
-       (when (seq queue)
-         (let [[node & children] (peek queue)]
-           (cons node
-                 (step (into (pop queue) children)))))))
-    (conj PersistentQueue/EMPTY tree)))
-
-
-(println (bfs-eager tree))
-(println (bfs-lazy tree))
+(defn findpath [stack]
+  (if (not (solved? stack))
+    (let [first* (pop* stack) l (last first*) ]
+      (findpath (drop-last
+                  (remove hasloop?  (lazy-cat
+                                      (map #(addtopath first* %)
+                                           (keys (l graph))) stack)))))
+    [(first stack)]
+    )
+  )
